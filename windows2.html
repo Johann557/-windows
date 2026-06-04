@@ -1,0 +1,1181 @@
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Evolution - Die interaktive Chronik aller Versionen</title>
+    <!-- Google Fonts & FontAwesome für modernen Look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Modernes Fluent Design Theme (Windows 11 inspired) */
+        :root {
+            --primary-accent: #0078d4;
+            --secondary-accent: #2b579a;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #1e1e24 0%, #0f1015 100%);
+            --card-bg: rgba(30, 30, 35, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f3f3f3;
+            --text-secondary: #adadad;
+            --glass-bg: rgba(20, 20, 25, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Hero Header mit dynamischer Windows-Grafik */
+        header {
+            position: relative;
+            background: linear-gradient(180deg, rgba(0, 120, 212, 0.2) 0%, rgba(15, 16, 21, 0) 100%),
+                        url('http://googleusercontent.com/image_collection/image_retrieval/9315902831380476842_0') center/cover no-repeat;
+            padding: 6rem 1rem 4rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            backdrop-filter: blur(8px);
+            background: rgba(15, 16, 21, 0.4);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #0078d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Interaktives Dashboard (Suche, Filter, Statistik) */
+        .dashboard {
+            max-width: 1200px;
+            margin: -2rem auto 3rem auto;
+            padding: 1.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            z-index: 10;
+            position: relative;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-accent);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 10px rgba(0, 120, 212, 0.3);
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary-accent);
+            color: white;
+            border-color: var(--primary-accent);
+            transform: translateY(-2px);
+        }
+
+        .stats-counter {
+            align-self: center;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Timeline Container */
+        .timeline-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Card-Layout für jede Version */
+        .version-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .version-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-accent);
+            opacity: 0.8;
+        }
+
+        .version-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        /* Karten-Kopfzeile */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .version-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .version-logo {
+            font-size: 1.8rem;
+            color: var(--primary-accent);
+        }
+
+        .version-title h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .badge-year {
+            background: rgba(0, 120, 212, 0.15);
+            color: #5bb3ff;
+            border: 1px solid rgba(0, 120, 212, 0.3);
+        }
+
+        .badge-era {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Beschreibungstext */
+        .version-desc {
+            font-size: 1.05rem;
+            color: #dedede;
+        }
+
+        /* Expandierbare Details (Akkordeon) */
+        .toggle-details-btn {
+            background: none;
+            border: none;
+            color: var(--primary-accent);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.5rem 0;
+            align-self: flex-start;
+            transition: color 0.2s;
+        }
+
+        .toggle-details-btn:hover {
+            color: #5bb3ff;
+        }
+
+        .toggle-details-btn i {
+            transition: transform 0.3s;
+        }
+
+        .toggle-details-btn.expanded i {
+            transform: rotate(180deg);
+        }
+
+        .details-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+        }
+
+        .details-panel.show {
+            max-height: 500px;
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            margin-top: 0.5rem;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .spec-item h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+        }
+
+        .spec-item p {
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .features-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .features-list li {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .features-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary-accent);
+            font-weight: bold;
+        }
+
+        /* Infografik Banner */
+        .info-banner {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(0, 120, 212, 0.15) 0%, rgba(43, 87, 154, 0.05) 100%);
+            border: 1px solid rgba(0, 120, 212, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .info-banner-img {
+            flex: 1 1 300px;
+            max-height: 250px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .info-banner-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info-banner-text {
+            flex: 2 1 400px;
+        }
+
+        .info-banner-text h2 {
+            margin-bottom: 0.8rem;
+            font-size: 1.8rem;
+            color: #fff;
+        }
+
+        .info-banner-text p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #0b0c0f;
+            border-top: 1px solid var(--glass-border);
+            padding: 2.5rem 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5rem;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Anpassungen */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            .dashboard {
+                margin-top: -1rem;
+                padding: 1rem;
+            }
+            .search-row {
+                flex-direction: column;
+            }
+            .stats-counter {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header mit visualisierendem Hintergrundbild -->
+    <header>
+        <div class="header-content">
+            <h1>Windows Evolution</h1>
+            <p>Die lückenlose Chronik aller Microsoft Windows Desktop-Versionen im Wandel der Zeit</p>
+        </div>
+    </header>
+
+    <!-- Interaktive Filterleiste & Suche -->
+    <div class="dashboard">
+        <div class="search-row">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Nach Version, Codename oder Feature suchen..." onkeyup="filterVersions()">
+            </div>
+            <div class="stats-counter" id="statsCounter">17 Versionen gelistet</div>
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="setEraFilter('all', this)">Alle Epochen</button>
+            <button class="filter-btn" onclick="setEraFilter('msdos', this)">MS-DOS Ära (1985–1994)</button>
+            <button class="filter-btn" onclick="setEraFilter('win9x', this)">9x-Reihe (1995–2000)</button>
+            <button class="filter-btn" onclick="setEraFilter('classic_nt', this)">Klassisches NT (1993–2005)</button>
+            <button class="filter-btn" onclick="setEraFilter('modern', this)">Moderne NT-Epoche (2006–Heute)</button>
+        </div>
+    </div>
+
+    <!-- Timeline Liste -->
+    <main class="timeline-container" id="timeline">
+        
+        <!-- Windows 1.0 -->
+        <article class="version-card" data-era="msdos">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 1.0</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">1985</span>
+                    <span class="badge badge-era">MS-DOS Aufsatz</span>
+                </div>
+            </div>
+            <p class="version-desc">Der Ursprung von Microsofts grafischer Reise. Windows 1.0 war kein eigenständiges Betriebssystem, sondern eine grafische Bedienhilfe für MS-DOS.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Interface Manager</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>16-Bit</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Kachel-Fenstermanagement</li>
+                            <li>Klassisches MS Paint & Notepad</li>
+                            <li>Reversi als erstes Spiel</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 2.0 -->
+        <article class="version-card" data-era="msdos">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 2.0</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">1987</span>
+                    <span class="badge badge-era">MS-DOS Aufsatz</span>
+                </div>
+            </div>
+            <p class="version-desc">Echte Flexibilität betritt die Bühne. Windows 2.0 erlaubte es Fenstern erstmals, sich gegenseitig zu überlappen und verbesserte die VGA-Grafik deutlich.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>N/A</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>16-Bit</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Überlappende Fenster</li>
+                            <li>Erste Versionen von Word und Excel</li>
+                            <li>Unterstützung für Tastatur-Kurzbefehle</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 3.0 -->
+        <article class="version-card" data-era="msdos">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 3.0</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">1990</span>
+                    <span class="badge badge-era">MS-DOS Aufsatz</span>
+                </div>
+            </div>
+            <p class="version-desc">Der erste große kommerzielle Erfolg. Windows 3.0 modernisierte das Speichermanagement, verbesserte die Performance und brachte das Kultspiel Solitär.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>N/A</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>16-Bit / Real- & Protected Mode</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Einführung des Program-Managers</li>
+                            <li>Solitär & Minesweeper</li>
+                            <li>Erweiterte Speichernutzung über 640 KB</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 3.1 -->
+        <article class="version-card" data-era="msdos">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 3.1</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">1992</span>
+                    <span class="badge badge-era">MS-DOS Aufsatz</span>
+                </div>
+            </div>
+            <p class="version-desc">Der stabile Klassiker der frühen 90er. Windows 3.1 brachte bahnbrechende Vektorschriftarten (TrueType) und ebnete den Weg für Windows in Unternehmen.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Janus</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>16-Bit</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>TrueType-Schriftarten integriert</li>
+                            <li>Einführung der Windows Registry</li>
+                            <li>Netzwerkfähige "Workgroups"-Edition</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows NT 3.1 -->
+        <article class="version-card" data-era="classic_nt">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows NT 3.1</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">1993</span>
+                    <span class="badge badge-era">NT Enterprise</span>
+                </div>
+            </div>
+            <p class="version-desc">Der Start des robusten NT-Kernels. Microsoft entwickelte NT komplett ungebunden von MS-DOS für höchste Server- und Enterprise-Stabilität.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Razzle</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>32-Bit (Vollwertig)</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Unabhängiger NT-Kernel</li>
+                            <li>Präemptives Multitasking</li>
+                            <li>Erste NTFS-Dateisystemunterstützung</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 95 -->
+        <article class="version-card" data-era="win9x">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 95</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">1995</span>
+                    <span class="badge badge-era">Windows 9x</span>
+                </div>
+            </div>
+            <p class="version-desc">Die Erfindung des modernen Betriebssystems. Das ikonische Startmenü, die Taskleiste und echtes 32-Bit Plug-and-Play veränderten die Tech-Welt nachhaltig.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Chicago</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>16/32-Bit Hybrid</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Startmenü und Taskleiste debütieren</li>
+                            <li>Lange Dateinamen (statt 8.3 Zeichen)</li>
+                            <li>Integrierte Internet-Explorer-Unterstützung</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows NT 4.0 -->
+        <article class="version-card" data-era="classic_nt">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows NT 4.0</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">1996</span>
+                    <span class="badge badge-era">NT Enterprise</span>
+                </div>
+            </div>
+            <p class="version-desc">Stabilität trifft Windows 95 UI. NT 4.0 brachte das neue, moderne Interface von Windows 95 in das hochstabile Firmennetzwerk.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Cairo / Shell Update</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>32-Bit</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Windows 95 Shell auf NT-Basis</li>
+                            <li>Ausgezeichnete Multi-User-Stabilität</li>
+                            <li>Grafiktreiber im Kernel-Mode</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 98 -->
+        <article class="version-card" data-era="win9x">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 98</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">1998</span>
+                    <span class="badge badge-era">Windows 9x</span>
+                </div>
+            </div>
+            <p class="version-desc">Das Betriebssystem für das Internetzeitalter. Windows 98 verbesserte den USB-Support massiv, optimierte FAT32 und integrierte das Web tief in den Desktop.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Memphis</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>16/32-Bit Hybrid</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Exzellenter USB- & AGP-Support</li>
+                            <li>Schnellstartleiste eingeführt</li>
+                            <li>"Active Desktop" (Web-Inhalte als Hintergrund)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 2000 -->
+        <article class="version-card" data-era="classic_nt">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 2000</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">2000</span>
+                    <span class="badge badge-era">NT Classic</span>
+                </div>
+            </div>
+            <p class="version-desc">Das sicherste Betriebssystem seiner Zeit. Windows 2000 kombinierte die Multimedia-Fähigkeiten der Consumer-Reihe mit der extremen Ausfallsicherheit von NT.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Windows NT 5.0</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>32-Bit</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Einführung des Active Directory</li>
+                            <li>Ruhezustand (Hibernate) nativ integriert</li>
+                            <li>Signifikant stabilere USB-Treiberarchitektur</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows ME -->
+        <article class="version-card" data-era="win9x">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows ME (Millennium Edition)</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">2000</span>
+                    <span class="badge badge-era">Windows 9x</span>
+                </div>
+            </div>
+            <p class="version-desc">Das vieldiskutierte Schlusslicht der MS-DOS-Linie. Windows ME fokussierte sich stark auf Multimedia-Inhalte, litt aber unter mangelnder Systemstabilität.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Millennium</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>16/32-Bit Hybrid</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Einführung der Systemwiederherstellung</li>
+                            <li>Windows Movie Maker debütiert</li>
+                            <li>MS-DOS Modus wird weitgehend versteckt</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows XP -->
+        <article class="version-card" data-era="classic_nt">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows XP</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">2001</span>
+                    <span class="badge badge-era">Verschmelzung</span>
+                </div>
+            </div>
+            <p class="version-desc">Die Legende. Windows XP vereinte endlich die Consumer- und Enterprise-Linien auf dem hochstabilen NT-Kernel und besaß ein unvergessliches blaues Oberflächendesign.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Whistler</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>32-Bit / Später 64-Bit Edition</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Luna-Themendesign & Bliss-Hintergrund</li>
+                            <li>CD-Brennen nativ im Windows Explorer</li>
+                            <li>Sehr langlebiger Support (bis 2014)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows Vista -->
+        <article class="version-card" data-era="modern">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows Vista</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">2007</span>
+                    <span class="badge badge-era">NT Modern</span>
+                </div>
+            </div>
+            <p class="version-desc">Ein radikaler Schritt nach vorn. Trotz anfänglicher Hardware-Probleme legte Vista mit seiner gläsernen Aero-Optik und harten Sicherheitsfeatures das Fundament für die Zukunft.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Longhorn</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>32-Bit / 64-Bit</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Aero Glass UI mit Transparenzeffekten</li>
+                            <li>Benutzerkontensteuerung (UAC) für Sicherheit</li>
+                            <li>Desktop Gadgets & Sidebar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 7 -->
+        <article class="version-card" data-era="modern">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 7</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">2009</span>
+                    <span class="badge badge-era">NT Modern</span>
+                </div>
+            </div>
+            <p class="version-desc">Der absolute Fan-Favorit. Windows 7 polierte die Aero-Struktur von Vista auf exzellente Performance auf und gilt bis heute als eines der besten Windows-Betriebssysteme.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Windows 7</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>32-Bit / 64-Bit</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Smarte Taskleiste ("Anheften" von Apps)</li>
+                            <li>Aero Snap (Fenster an Bildschirmränder ziehen)</li>
+                            <li>HomeGroup für unkomplizierte Netzwerke</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 8 -->
+        <article class="version-card" data-era="modern">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 8</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">2012</span>
+                    <span class="badge badge-era">Kachel-Ära</span>
+                </div>
+            </div>
+            <p class="version-desc">Ein mutiges, kontroverses Redesign. Windows 8 entfernte das klassische Startmenü zugunsten einer bildschirmfüllenden Kacheloberfläche für Touch-Geräte.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Windows 8</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>32-Bit / 64-Bit / ARM (RT)</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Metro-Kacheloberfläche</li>
+                            <li>Einführung des Windows Store</li>
+                            <li>Extrem schnelle Bootzeiten durch Fast Startup</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 8.1 -->
+        <article class="version-card" data-era="modern">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 8.1</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">2013</span>
+                    <span class="badge badge-era">Kachel-Ära</span>
+                </div>
+            </div>
+            <p class="version-desc">Die besonnene Korrektur. Microsoft reagierte auf weltweite Kritik und brachte mit Version 8.1 den Startknopf zurück und erlaubte das Booten direkt zum klassischen Desktop.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Blue</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>32-Bit / 64-Bit / ARM</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Rückkehr des Startknopfes</li>
+                            <li>Direktes Booten auf den Desktop</li>
+                            <li>Erweiterte Multitasking-Optionen für Apps</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 10 -->
+        <article class="version-card" data-era="modern">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 10</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">2015</span>
+                    <span class="badge badge-era">Windows as a Service</span>
+                </div>
+            </div>
+            <p class="version-desc">Das einigende Windows. Bringt das klassische Startmenü zurück und verschmilzt Kachel-Apps nahtlos mit Desktop-Fenstern. Entwickelt als einheitliches System für alle Gerätetypen.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Threshold / Redstone</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>32-Bit / 64-Bit / ARM</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Cortana Sprachassistent debütiert</li>
+                            <li>Neuer Microsoft Edge Browser (basierend auf Chromium)</li>
+                            <li>Virtuelle Desktops und Task View</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Windows 11 -->
+        <article class="version-card" data-era="modern">
+            <div class="card-header">
+                <div class="version-title">
+                    <i class="fa-brands fa-windows version-logo"></i>
+                    <h2>Windows 11</h2>
+                </div>
+                <div class="badge-row">
+                    <span class="badge badge-year">2021</span>
+                    <span class="badge badge-era">Fluent Design & KI</span>
+                </div>
+            </div>
+            <p class="version-desc">Die moderne Gegenwart. Windows 11 besticht durch ein zentriertes Fluent-Design mit abgerundeten Fensterecken, nativer Android-App-Unterstützung und tief integrierter künstlicher Intelligenz.</p>
+            <button class="toggle-details-btn" onclick="toggleDetails(this)">
+                <span>Technische Details anzeigen</span> <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="details-panel">
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Codename</h4>
+                        <p>Sun Valley</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Architektur</h4>
+                        <p>Ausschließlich 64-Bit / ARM</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Schlüsselfeatures</h4>
+                        <ul class="features-list">
+                            <li>Zentrierte, neu strukturierte Taskleiste</li>
+                            <li>Windows Copilot (KI-Assistent)</li>
+                            <li>Unterstützung für Android-Apps (WSA)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+    </main>
+
+    <!-- Attraktiver Info Banner am Ende der Seite -->
+    <section class="info-banner">
+        <div class="info-banner-img">
+            <img src="http://googleusercontent.com/image_collection/image_retrieval/16354383760834893503_0" alt="Evolution von Microsoft Windows">
+        </div>
+        <div class="info-banner-text">
+            <h2>Wusstest du schon?</h2>
+            <p>Microsoft hielt sehr lange an der Codebasis von MS-DOS fest (bis Windows ME), während parallel die stabilere NT-Architektur für Firmen entwickelt wurde. Seit Windows XP laufen alle Consumer-Versionen ausschließlich auf dem sicheren NT-Kernel.</p>
+            <p style="font-weight: 600; color: #5bb3ff;">Nutze die Suche oben, um bestimmte Epochen auszufiltern und die Entwicklung live nachzuvollziehen!</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 – Die Windows Evolution Chronik.</p>
+        <p>Erstellt als interaktive HTML-Ressource. Icons bereitgestellt von FontAwesome.</p>
+    </footer>
+
+    <!-- Such- und Filterskript -->
+    <script>
+        let currentEra = 'all';
+
+        // Details-Accordion umschalten
+        function toggleDetails(btn) {
+            const panel = btn.nextElementSibling;
+            btn.classList.toggle('expanded');
+            panel.classList.toggle('show');
+            
+            if (panel.classList.contains('show')) {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+                btn.querySelector('span').innerText = "Details ausblenden";
+            } else {
+                panel.style.maxHeight = "0";
+                btn.querySelector('span').innerText = "Technische Details anzeigen";
+            }
+        }
+
+        // Epochenfilter setzen
+        function setEraFilter(era, button) {
+            currentEra = era;
+            
+            // Aktiven Button optisch hervorheben
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            filterVersions();
+        }
+
+        // Kombinierter Filter (Suche + Epoche)
+        function filterVersions() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.version-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const title = card.querySelector('.version-title h2').innerText.toLowerCase();
+                const desc = card.querySelector('.version-desc').innerText.toLowerCase();
+                const specTexts = Array.from(card.querySelectorAll('.spec-item p')).map(p => p.innerText.toLowerCase()).join(' ');
+                const cardEra = card.getAttribute('data-era');
+
+                // Übereinstimmung prüfen
+                const matchesSearch = title.includes(searchInput) || desc.includes(searchInput) || specTexts.includes(searchInput);
+                const matchesEra = (currentEra === 'all') || (cardEra === currentEra);
+
+                if (matchesSearch && matchesEra) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Statistik im Dashboard updaten
+            const statsCounter = document.getElementById('statsCounter');
+            statsCounter.innerText = `${visibleCount} von ${cards.length} Versionen angezeigt`;
+        }
+    </script>
+</body>
+</html>
+
+```
